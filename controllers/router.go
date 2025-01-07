@@ -23,7 +23,9 @@ import (
 
 	"github.com/google/wire"
 	"github.com/julienschmidt/httprouter"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/newscred/webhook-broker/config"
+	"github.com/newscred/webhook-broker/storage"
 	"github.com/newscred/webhook-broker/storage/data"
 )
 
@@ -214,6 +216,7 @@ func NewRouter(controllers *Controllers) *httprouter.Router {
 	apiRouter.Handler(http.MethodGet, "/debug/pprof/heap", pprof.Handler("heap"))
 	apiRouter.Handler(http.MethodGet, "/debug/pprof/threadcreate", pprof.Handler("threadcreate"))
 	apiRouter.Handler(http.MethodGet, "/debug/pprof/block", pprof.Handler("block"))
+	apiRouter.Handler(http.MethodGet, "/metrics", promhttp.HandlerFor(storage.NewPrometheusRegistry(), promhttp.HandlerOpts{}))
 	setupAPIRoutes(apiRouter, controllers.StatusController, controllers.ProducersController, controllers.ProducerController, controllers.ChannelController,
 		controllers.ConsumerController, controllers.ConsumersController, controllers.JobsController, controllers.JobController, controllers.BroadcastController, controllers.MessageController,
 		controllers.MessagesController, controllers.DLQController, controllers.ChannelsController)
